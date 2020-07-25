@@ -101,14 +101,14 @@ namespace imageviewer
             this.panel1.Controls.Add(this.pictureBox1);
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(937, 481);
+            this.panel1.Size = new System.Drawing.Size(1034, 531);
             this.panel1.TabIndex = 0;
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(8, 8);
+            this.pictureBox1.Location = new System.Drawing.Point(9, 9);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(100, 50);
+            this.pictureBox1.Size = new System.Drawing.Size(110, 55);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
@@ -116,27 +116,27 @@ namespace imageviewer
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(12, 499);
+            this.button1.Location = new System.Drawing.Point(13, 551);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(128, 23);
+            this.button1.Size = new System.Drawing.Size(141, 25);
             this.button1.TabIndex = 1;
             this.button1.Text = "<< vorheriges";
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // Imagepath
             // 
-            this.Imagepath.Location = new System.Drawing.Point(280, 499);
+            this.Imagepath.Location = new System.Drawing.Point(309, 551);
             this.Imagepath.Name = "Imagepath";
-            this.Imagepath.Size = new System.Drawing.Size(128, 23);
+            this.Imagepath.Size = new System.Drawing.Size(141, 25);
             this.Imagepath.TabIndex = 2;
             this.Imagepath.Text = "Fotos";
             this.Imagepath.Click += new System.EventHandler(this.button2_Click);
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(146, 499);
+            this.button3.Location = new System.Drawing.Point(161, 551);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(128, 23);
+            this.button3.Size = new System.Drawing.Size(141, 25);
             this.button3.TabIndex = 3;
             this.button3.Text = "nächstes >>";
             this.button3.Click += new System.EventHandler(this.button3_Click);
@@ -147,52 +147,53 @@ namespace imageviewer
             // 
             // timer1
             // 
-            this.timer1.Interval = 5000;
+            this.timer1.Interval = 10000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(12, 528);
+            this.button4.BackColor = System.Drawing.Color.Green;
+            this.button4.Location = new System.Drawing.Point(13, 583);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(262, 23);
+            this.button4.Size = new System.Drawing.Size(289, 25);
             this.button4.TabIndex = 4;
             this.button4.Text = "<< START Diashow >>";
+            this.button4.UseVisualStyleBackColor = false;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // dateTimePicker1
             // 
-            this.dateTimePicker1.Location = new System.Drawing.Point(569, 501);
+            this.dateTimePicker1.Location = new System.Drawing.Point(628, 553);
             this.dateTimePicker1.Name = "dateTimePicker1";
-            this.dateTimePicker1.Size = new System.Drawing.Size(226, 21);
+            this.dateTimePicker1.Size = new System.Drawing.Size(249, 22);
             this.dateTimePicker1.TabIndex = 6;
             this.dateTimePicker1.ValueChanged += new System.EventHandler(this.dateTimePicker1_ValueChanged);
             // 
             // dateTimePicker2
             // 
             this.dateTimePicker2.Format = System.Windows.Forms.DateTimePickerFormat.Time;
-            this.dateTimePicker2.Location = new System.Drawing.Point(801, 501);
+            this.dateTimePicker2.Location = new System.Drawing.Point(884, 553);
             this.dateTimePicker2.Name = "dateTimePicker2";
             this.dateTimePicker2.ShowUpDown = true;
-            this.dateTimePicker2.Size = new System.Drawing.Size(87, 21);
+            this.dateTimePicker2.Size = new System.Drawing.Size(96, 22);
             this.dateTimePicker2.TabIndex = 7;
             this.dateTimePicker2.ValueChanged += new System.EventHandler(this.dateTimePicker2_ValueChanged);
             // 
             // SoundPath
             // 
             this.SoundPath.AutoEllipsis = true;
-            this.SoundPath.Location = new System.Drawing.Point(414, 499);
+            this.SoundPath.Location = new System.Drawing.Point(457, 551);
             this.SoundPath.Name = "SoundPath";
-            this.SoundPath.Size = new System.Drawing.Size(128, 23);
+            this.SoundPath.Size = new System.Drawing.Size(141, 25);
             this.SoundPath.TabIndex = 8;
             this.SoundPath.Text = "Musik";
             this.SoundPath.Click += new System.EventHandler(this.SoundPath_Click);
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(106F, 106F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(937, 550);
+            this.ClientSize = new System.Drawing.Size(1035, 607);
             this.Controls.Add(this.SoundPath);
             this.Controls.Add(this.dateTimePicker2);
             this.Controls.Add(this.dateTimePicker1);
@@ -269,15 +270,15 @@ namespace imageviewer
 
         private void fillSoundList()
         {
-            string[] part1 = null, part2 = null/*, part3 = null*/;
-            part1 = Directory.GetFiles(config[1], "*.mp3");
-            part2 = Directory.GetFiles(config[1], "*.wav");
+            string[] part1 = null/*, part2 = null, part3 = null*/;
+            part1 = Directory.GetFiles(config[1], "*.wav");
+           // part2 = Directory.GetFiles(config[1], "*.wav");
            // part3 = Directory.GetFiles(config[0], "*.xxx");
 
-            folderSound = new string[part1.Length + part2.Length /*+ part3.Length*/];
+            folderSound = new string[part1.Length /* + part2.Length + part3.Length*/];
 
             Array.Copy(part1, 0, folderSound, 0, part1.Length);
-            Array.Copy(part2, 0, folderSound, part1.Length, part2.Length);
+           // Array.Copy(part2, 0, folderSound, part1.Length, part2.Length);
            // Array.Copy(part3, 0, folderFile, part1.Length + part2.Length, part3.Length);
 
             selectedSound = 0;
@@ -296,8 +297,9 @@ namespace imageviewer
             }
             else
             {
-                pictureBox1.Width = imgtemp.Width;
-                pictureBox1.Height = imgtemp.Height;
+                pictureBox1.Width = imgtemp.Width / 2;
+                pictureBox1.Height = imgtemp.Height / 2;
+                pictureBox1.SizeMode = PictureBoxSizeMode.CenterImage;
             }
 			pictureBox1.Image = imgtemp;
 		}
@@ -341,9 +343,10 @@ namespace imageviewer
             {
                 selectedSound = selectedSound + 1;
             }
-            simpleSound = new SoundPlayer(folderSound[selectedSound]);
-            simpleSound.Play();
-            simpleSound.PlayLooping();
+
+             simpleSound = new SoundPlayer(folderSound[selectedSound]);
+             simpleSound.Play();
+             simpleSound.PlayLooping();
         }
 
 
@@ -368,13 +371,15 @@ namespace imageviewer
 			{
 				timer1.Enabled = false;
 				button4.Text = "<< START Diashow >>";
+                button4.BackColor = Color.Green;
 			}
 			else
 			{
 				timer1.Enabled = true;
 				button4.Text = "<< STOP Diashow >>";
-			}
-		}
+                button4.BackColor = Color.Red;
+            }
+        }
 
 		private void Form1_Load(object sender, System.EventArgs e)
 		{
@@ -409,6 +414,8 @@ namespace imageviewer
         { 
            if (this.WindowState == FormWindowState.Maximized)
             {
+                button4.Text = "<< STOP Diashow >>";
+                button4.BackColor = Color.Red;
                 button1.Enabled = false;
                 button3.Enabled = false;
                 button4.Enabled = false;
@@ -423,8 +430,10 @@ namespace imageviewer
                 SoundPath.Visible = false;
                 if (folderSound != null)
                 {
-                    nextSound();
+                    nextSound();       // start sound
                 }
+                timer1.Enabled = true; // start slide show 
+                showImage(folderFile[selected]);
             }
             else
             {
@@ -445,8 +454,9 @@ namespace imageviewer
                 SoundPath.Visible = true;
                 if (simpleSound != null)
                 {
-                    simpleSound.Stop();
+                    simpleSound.Stop(); // stop sound
                 }
+
             }
         }
 
@@ -495,18 +505,23 @@ namespace imageviewer
             TimeSpan leftTime = eventTime.Subtract(DateTime.Now);
             if (leftTime.TotalSeconds < 0)
             {
-                countDownString = "00:00:00:00";
+                //countDownString = "00:00:00:00";
+                countDownString = "00:00:00";
                 Refresh();
-                eventTimer.Stop();
+
                 if (simpleSound != null)
                 {
                     simpleSound.Stop();
                 }
-                Application.Exit();
+                if (leftTime.TotalSeconds < -10)
+                {
+                    Application.Exit();
+                    eventTimer.Stop();
+                }
             }
             else
             {
-                countDownString = leftTime.Hours.ToString("00") + ":" +
+                countDownString = /*leftTime.Hours.ToString("00") + ":" +*/
                   leftTime.Minutes.ToString("00") + ":" +
                   leftTime.Seconds.ToString("00") + ":" +
                    (leftTime.Milliseconds / 10).ToString("00");
