@@ -39,6 +39,7 @@ namespace imageviewer
         private DateTime eventTime;
         private Timer eventTimer;
         private SoundPlayer simpleSound;
+        private bool SoundPlayerOn = false;
 
         public Form1()
 		{
@@ -101,8 +102,9 @@ namespace imageviewer
             this.panel1.Controls.Add(this.pictureBox1);
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1034, 531);
+            this.panel1.Size = new System.Drawing.Size(1034, 608);
             this.panel1.TabIndex = 0;
+
             // 
             // pictureBox1
             // 
@@ -113,6 +115,7 @@ namespace imageviewer
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
+
             // 
             // button1
             // 
@@ -194,15 +197,16 @@ namespace imageviewer
             this.AutoScaleDimensions = new System.Drawing.SizeF(106F, 106F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(1035, 607);
+            this.Controls.Add(this.button4);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.Imagepath);
             this.Controls.Add(this.SoundPath);
             this.Controls.Add(this.dateTimePicker2);
             this.Controls.Add(this.dateTimePicker1);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.Imagepath);
-            this.Controls.Add(this.button4);
-            this.Controls.Add(this.button1);
             this.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.KeyPreview = true;
             this.Name = "Form1";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
@@ -210,10 +214,12 @@ namespace imageviewer
             this.Text = "JoKi Gottesdienst";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
+            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FormKeyPress);
             this.Resize += new System.EventHandler(this.Form1_Resize);
             this.panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
+            this.Focus();
 
         }
         #endregion
@@ -291,8 +297,8 @@ namespace imageviewer
             Image imgtemp = Image.FromFile(path);
             if (timer1.Enabled == true)
             {
-                pictureBox1.Height = Screen.PrimaryScreen.WorkingArea.Height;
-                pictureBox1.Width = Screen.PrimaryScreen.WorkingArea.Width;
+                pictureBox1.Height = Screen.PrimaryScreen.WorkingArea.Height - Screen.PrimaryScreen.WorkingArea.Height/24;
+                pictureBox1.Width = Screen.PrimaryScreen.WorkingArea.Width - Screen.PrimaryScreen.WorkingArea.Width/80;
                 pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
             }
             else
@@ -347,6 +353,7 @@ namespace imageviewer
              simpleSound = new SoundPlayer(folderSound[selectedSound]);
              simpleSound.Play();
              simpleSound.PlayLooping();
+             SoundPlayerOn = true;
         }
 
 
@@ -417,12 +424,14 @@ namespace imageviewer
                 button4.Text = "<< STOP Diashow >>";
                 button4.BackColor = Color.Red;
                 button1.Enabled = false;
+                Imagepath.Enabled = false;
                 button3.Enabled = false;
                 button4.Enabled = false;
                 dateTimePicker1.Enabled = false;
                 dateTimePicker2.Enabled = false;
                 SoundPath.Enabled = false;
                 button1.Visible = false;
+                Imagepath.Visible = false;
                 button3.Visible = false;
                 button4.Visible = false;
                 dateTimePicker1.Visible = false;
@@ -434,10 +443,12 @@ namespace imageviewer
                 }
                 timer1.Enabled = true; // start slide show 
                 showImage(folderFile[selected]);
+                this.Focus();
             }
             else
             {
                 button1.Visible = true;
+                Imagepath.Visible = true;
                 button3.Visible = true;
                 button4.Visible = true;
                 dateTimePicker1.Enabled = true;
@@ -446,6 +457,7 @@ namespace imageviewer
                 if ((folderFile != null)&&(folderFile.GetLength(0)>0))
                 {
                     button1.Enabled = true;
+                    Imagepath.Enabled = true;
                     button3.Enabled = true;
                     button4.Enabled = true;
                 }
@@ -455,18 +467,68 @@ namespace imageviewer
                 if (simpleSound != null)
                 {
                     simpleSound.Stop(); // stop sound
+                    SoundPlayerOn = false;
                 }
-
+                this.Focus();
             }
         }
-
 
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
             Size stringSize = Size.Ceiling(e.Graphics.MeasureString(countDownString, countDownStringFont));
+
+            // Create solid brush.
+            SolidBrush grayBrush = new SolidBrush(Color.Gray);
+            // Create rectangle.
+            //Rectangle rect = new Rectangle(pictureBox1.Width - 4 - stringSize.Width, pictureBox1.Height - 4 - stringSize.Height, stringSize.Width, stringSize.Height);
+            Rectangle rect = new Rectangle(4, pictureBox1.Height - 4 - stringSize.Height,pictureBox1.Width, stringSize.Height);
+            // Fill rectangle to screen.
+            e.Graphics.FillRectangle(grayBrush, rect);
             e.Graphics.DrawString(countDownString, countDownStringFont,
-                countDownBrush, ((this.Width - 4) / 2) - (stringSize.Width / 2),
-                ((this.Height - 32) / 2) - (stringSize.Height / 2));
+                countDownBrush, ((pictureBox1.Width - 4) ) - (stringSize.Width ),
+                ((pictureBox1.Height - 4) ) - (stringSize.Height ));
+            string retString;
+            int retStringSize = 4;
+            if (SoundPlayerOn == false)
+            {
+                retString = "M ";
+                e.Graphics.DrawString(retString, countDownStringFont, new SolidBrush(Color.Red),retStringSize,((pictureBox1.Height - 4)) - (stringSize.Height));
+                stringSize = Size.Ceiling(e.Graphics.MeasureString(retString, countDownStringFont));
+                retStringSize += stringSize.Width;
+            }
+        }
+
+        private void FormKeyPress(object sender, KeyPressEventArgs e)
+        {
+
+            if(e.KeyChar == 0x000d) //<ctrl + 'M'>
+            {
+                if (this.WindowState == FormWindowState.Maximized)
+                {
+                    if (SoundPlayerOn)
+                    {
+                        simpleSound.Stop(); // stop sound
+                        SoundPlayerOn = false;
+                    }
+                    else
+                    {
+                        if (folderSound != null)
+                        {
+                            nextSound();       // start sound
+                        }
+                    }
+                }
+            }
+            else if (e.KeyChar == 0x0006) //<ctrl + 'F'>
+            {
+                e.Handled = true;
+            }
+            else if (e.KeyChar == 0x0013) //<ctrl + 'S'>
+            {
+                e.Handled = true;
+            }
+
+            e.Handled = true;
         }
 
         private void initializeEventTimer()
@@ -484,7 +546,7 @@ namespace imageviewer
             dateTimePicker2.Value = eventTime;
 
             eventTimer = new Timer();
-            countDownStringFont = new Font(new FontFamily("Arial"), 50,
+            countDownStringFont = new Font(new FontFamily("Arial"), 25,
                                            FontStyle.Bold);
             countDownBrush = new SolidBrush(Color.White);
             // Events registrieren
@@ -512,6 +574,7 @@ namespace imageviewer
                 if (simpleSound != null)
                 {
                     simpleSound.Stop();
+                    SoundPlayerOn = false;
                 }
                 if (leftTime.TotalSeconds < -10)
                 {
@@ -522,9 +585,10 @@ namespace imageviewer
             else
             {
                 countDownString = /*leftTime.Hours.ToString("00") + ":" +*/
+                  "JoKi Hersbruck Livegottesdienst beginnt in "+
                   leftTime.Minutes.ToString("00") + ":" +
                   leftTime.Seconds.ToString("00") + ":" +
-                   (leftTime.Milliseconds / 10).ToString("00");
+                   (leftTime.Milliseconds / 10).ToString("00") + " Minuten";
                 Refresh();
             }
         }
