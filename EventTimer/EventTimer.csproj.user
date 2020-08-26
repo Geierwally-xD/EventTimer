@@ -19,7 +19,8 @@
     <RemoteDebugEnabled>false</RemoteDebugEnabled>
     <RemoteDebugMachine />
     <StartAction>Project</StartAction>
-    <StartArguments />
+    <StartArguments>
+    </StartArguments>
     <StartPage />
     <StartProgram />
     <StartURL />

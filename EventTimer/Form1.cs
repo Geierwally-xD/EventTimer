@@ -33,13 +33,18 @@ namespace imageviewer
         private Button SoundPath;
         private System.ComponentModel.IContainer components;
         private string[] config = { " ", " ", " " };
+        private string JokiAutomationPath = Environment.GetEnvironmentVariable("JokiAutomation");
         private string countDownString;
+        private string breakTxt1 = "Dieser Teil des Gottesdienstes wird aus Datenschutzgründen nicht live übertragen.";
+        private string breakTxt2 = "Die Liveübertragung wird in Kürze fortgesetzt, wir bitten um Ihr Verständnis!";
         Font countDownStringFont;
         SolidBrush countDownBrush;
-        private DateTime eventTime;
+        private DateTime eventTime = DateTime.Now;
         private Timer eventTimer;
         private SoundPlayer simpleSound;
         private bool SoundPlayerOn = false;
+        private bool breakTxt1Active = false;
+        private bool commandLineCall = false;
 
         public Form1()
 		{
@@ -47,11 +52,7 @@ namespace imageviewer
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-
-			//
-			// TODO: Add any constructor code after InitializeComponent call
-			//
-		}
+        }
 
 		/// <summary>
 		/// Clean up any resources being used.
@@ -104,7 +105,6 @@ namespace imageviewer
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1034, 608);
             this.panel1.TabIndex = 0;
-
             // 
             // pictureBox1
             // 
@@ -114,40 +114,45 @@ namespace imageviewer
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
-            this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
-
-            // 
-            // button1
-            // 
+            this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);            
+			// 
+		    // button1
+            //
+            this.button1.BackColor = System.Drawing.Color.White;
             this.button1.Location = new System.Drawing.Point(13, 551);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(141, 25);
             this.button1.TabIndex = 1;
             this.button1.Text = "<< vorheriges";
+		    this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // Imagepath
             // 
+            this.Imagepath.BackColor = System.Drawing.Color.White;
             this.Imagepath.Location = new System.Drawing.Point(309, 551);
             this.Imagepath.Name = "Imagepath";
             this.Imagepath.Size = new System.Drawing.Size(141, 25);
             this.Imagepath.TabIndex = 2;
             this.Imagepath.Text = "Fotos";
+            this.Imagepath.UseVisualStyleBackColor = false;
             this.Imagepath.Click += new System.EventHandler(this.button2_Click);
             // 
             // button3
             // 
+            this.button3.BackColor = System.Drawing.Color.White;
             this.button3.Location = new System.Drawing.Point(161, 551);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(141, 25);
             this.button3.TabIndex = 3;
             this.button3.Text = "nächstes >>";
+            this.button3.UseVisualStyleBackColor = false;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // folderBrowserDialog1
             // 
-            this.folderBrowserDialog1.ShowNewFolderButton = false;
-            // 
+            this.folderBrowserDialog1.ShowNewFolderButton = false;            
+			// 
             // timer1
             // 
             this.timer1.Interval = 10000;
@@ -170,7 +175,7 @@ namespace imageviewer
             this.dateTimePicker1.Name = "dateTimePicker1";
             this.dateTimePicker1.Size = new System.Drawing.Size(249, 22);
             this.dateTimePicker1.TabIndex = 6;
-            this.dateTimePicker1.ValueChanged += new System.EventHandler(this.dateTimePicker1_ValueChanged);
+            this.dateTimePicker1.ValueChanged += new System.EventHandler(this.dateTimePicker1_ValueChanged); 
             // 
             // dateTimePicker2
             // 
@@ -185,13 +190,15 @@ namespace imageviewer
             // SoundPath
             // 
             this.SoundPath.AutoEllipsis = true;
+            this.SoundPath.BackColor = System.Drawing.Color.White;
             this.SoundPath.Location = new System.Drawing.Point(457, 551);
             this.SoundPath.Name = "SoundPath";
             this.SoundPath.Size = new System.Drawing.Size(141, 25);
             this.SoundPath.TabIndex = 8;
             this.SoundPath.Text = "Musik";
-            this.SoundPath.Click += new System.EventHandler(this.SoundPath_Click);
-            // 
+            this.SoundPath.UseVisualStyleBackColor = false;
+            this.SoundPath.Click += new System.EventHandler(this.SoundPath_Click);            
+			// 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(106F, 106F);
@@ -227,23 +234,68 @@ namespace imageviewer
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
+        /// 
+        private static Form1 JET;
         [STAThread]
-		static void Main() 
-		{
-			Application.Run(new Form1());
-		}
 
-		private void button2_Click(object sender, System.EventArgs e)
+        static void Main(string[] args) 
+		{
+           
+            JET= new Form1();
+            if (args.Length > 0)
+            {
+                JET.CommandInterpreter(Environment.GetCommandLineArgs());
+            }
+            Application.Run(JET);
+        }
+
+        // interprets command line arguments if called from JokiAutomation - App
+        private void CommandInterpreter(string[] commands)
+        {
+            commandLineCall = true;
+            try
+            {
+                string cmd = commands[1];
+                if((cmd == "Pause")&&(commands.Length == 4))
+                {
+                    if (commands[2].Length > 10)
+                    {
+                        breakTxt1 = commands[2];
+                    }
+                    if (commands[3].Length > 10)
+                    {
+                        breakTxt2 = commands[3];
+                    }
+                }
+                else if(cmd == "Timer")
+                {
+                    DateTime dateNow = DateTime.Now;
+                    eventTime = new DateTime(dateNow.Year,dateNow.Month, dateNow.Day,Convert.ToUInt16(commands[2].Substring(0, 2)), Convert.ToUInt16(commands[2].Substring(3, 2)),0);
+                }
+                else
+                {
+                    throw new System.ArgumentException(" ", "original");
+                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("JoKi EventTimer\nFormatfehler in Kommandozeilenaufruf");
+            }
+        }
+
+        // eventhandler Button 'Fotos' (adapt path to fotos directory)
+        private void button2_Click(object sender, System.EventArgs e)
 		{
             folderBrowserDialog1.SelectedPath = config[0];
             if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
 			{
                 config[0] = folderBrowserDialog1.SelectedPath;
-                System.IO.File.WriteAllLines("Event.cfg", config);
+                System.IO.File.WriteAllLines(JokiAutomationPath + "Event.cfg", config);
                 fillImageList();
 			}
 		}
 
+        // read in images from configured Foto path for slide show
         private void fillImageList ()
         {
             string[] part1 = null, part2 = null, part3 = null;
@@ -295,74 +347,101 @@ namespace imageviewer
 		{
             //PictureBox1.Location = Screen.PrimaryScreen.WorkingArea.Location;
             Image imgtemp = Image.FromFile(path);
-            if (timer1.Enabled == true)
+            if (this.WindowState == FormWindowState.Maximized)
             {
                 pictureBox1.Height = Screen.PrimaryScreen.WorkingArea.Height - Screen.PrimaryScreen.WorkingArea.Height/24;
                 pictureBox1.Width = Screen.PrimaryScreen.WorkingArea.Width - Screen.PrimaryScreen.WorkingArea.Width/80;
-                pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
             }
             else
             {
-                pictureBox1.Width = imgtemp.Width / 2;
-                pictureBox1.Height = imgtemp.Height / 2;
-                pictureBox1.SizeMode = PictureBoxSizeMode.CenterImage;
+                pictureBox1.Width = imgtemp.Width / 3;
+                pictureBox1.Height = imgtemp.Height / 3;
             }
-			pictureBox1.Image = imgtemp;
+            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+            pictureBox1.Image = imgtemp;
 		}
 
-		private void prevImage()
+        // show previous image, if format is supported
+        private void prevImage()
 		{
-			if(selected == 0)
-			{
-				selected = folderFile.Length - 1;
-				showImage(folderFile[selected]);		
-			}
-			else
-			{
-				selected = selected - 1;                				
-				showImage(folderFile[selected]);
-			}
-		}
-
-		private void nextImage()
-		{
-			if(selected == folderFile.Length - 1)
-			{
-				selected = 0;				
-				showImage(folderFile[selected]);
-			}
-			else
-			{
-				selected = selected + 1;                				
-				showImage(folderFile[selected]);
-			}
-		}
-
-        private void nextSound()
-        {
-
-            if (selectedSound == folderSound.Length - 1)
+            try
             {
-                selectedSound = 0;
+                if (selected == 0)
+                {
+                    selected = folderFile.Length - 1;
+                    showImage(folderFile[selected]);
+                }
+                else
+                {
+                    selected = selected - 1;
+                    showImage(folderFile[selected]);
+                }
             }
-            else
+            catch (Exception)
             {
-                selectedSound = selectedSound + 1;
+                MessageBox.Show("Nicht unterstütztes Image - Format!\njpeg, bmp und jpg sind möglich");
             }
-
-             simpleSound = new SoundPlayer(folderSound[selectedSound]);
-             simpleSound.Play();
-             simpleSound.PlayLooping();
-             SoundPlayerOn = true;
         }
 
+        // show next image, if format is supported
+		private void nextImage()
+		{
+            try
+            {
+                if (selected == folderFile.Length - 1)
+                {
+                    selected = 0;
+                    showImage(folderFile[selected]);
+                }
+                else
+                {
+                    selected = selected + 1;
+                    showImage(folderFile[selected]);
+                }
+                if (eventTimer.Enabled == false)
+                {  //show break text 1 or 2 if eventtimer is not active
+                    breakTxt1Active = !breakTxt1Active;
+                }
+            }
+            catch(Exception)
+            {
+                MessageBox.Show("Nicht unterstütztes Image - Format!\njpeg, bmp und jpg sind möglich");
+            }
+        }
 
+        // play next sound if sound format is supported
+        private void nextSound()
+        {
+            try
+            {
+                if (selectedSound == folderSound.Length - 1)
+                {
+                    selectedSound = 0;
+                }
+                else
+                {
+                    selectedSound = selectedSound + 1;
+                }
+
+                simpleSound = new SoundPlayer(folderSound[selectedSound]);
+                simpleSound.Play();
+                simpleSound.PlayLooping();
+                SoundPlayerOn = true;
+            }
+            catch(Exception)
+            {
+                MessageBox.Show("Nicht unterstütztes Audioformat!\nEs wird nur *.wav unterstützt");
+            }
+        }
+
+        // eventhandler Button 'vorheriges'
         private void button1_Click(object sender, System.EventArgs e)
 		{
 			prevImage();
 		}
 
-		private void button3_Click(object sender, System.EventArgs e)
+        // eventhandler Button 'nächstes'
+        private void button3_Click(object sender, System.EventArgs e)
 		{
 			nextImage();
 		}
@@ -372,7 +451,8 @@ namespace imageviewer
 			nextImage();
 		}
 
-		private void button4_Click(object sender, System.EventArgs e)
+        // eventhandler Button 'Start / Stop Diashow' (start and stop slide show)
+        private void button4_Click(object sender, System.EventArgs e)
 		{
 			if(timer1.Enabled == true)
 			{
@@ -388,11 +468,12 @@ namespace imageviewer
             }
         }
 
+        //eventhandler form load, read in configfile and initialize slice and sound lists
 		private void Form1_Load(object sender, System.EventArgs e)
 		{
-            if (File.Exists("Event.cfg"))
+            if (File.Exists(JokiAutomationPath + "Event.cfg"))
             {
-                config = System.IO.File.ReadAllLines("Event.cfg");
+                config = System.IO.File.ReadAllLines(JokiAutomationPath + "Event.cfg");
                 if (Directory.Exists(config[0]))
                 {
                     fillImageList();
@@ -407,16 +488,20 @@ namespace imageviewer
                 {
                     fillSoundList();
                 }
+                initializeEventTimer();
+                if (commandLineCall)
+                {
+                    JET.WindowState = FormWindowState.Maximized;
+                }
             }
             else
             {
-                button1.Enabled = false;
-                button3.Enabled = false;
-                button4.Enabled = false;
+                MessageBox.Show("Fehler bei Lesen Konfigurationsfile\nSystemvariable JokiAutomation fehlt\nbzw. zeit auf falschen Pfad");
+                Application.Exit();
             }
-            initializeEventTimer();
         }
 
+        //form resize event handler controls features during maximize or minimize window eg. start\stop dia show and music enable buttons
         private void Form1_Resize(object sender, EventArgs e)
         { 
            if (this.WindowState == FormWindowState.Maximized)
@@ -441,9 +526,7 @@ namespace imageviewer
                 {
                     nextSound();       // start sound
                 }
-                timer1.Enabled = true; // start slide show 
-                showImage(folderFile[selected]);
-                this.Focus();
+                timer1.Enabled = true; // start slide show                 
             }
             else
             {
@@ -469,35 +552,53 @@ namespace imageviewer
                     simpleSound.Stop(); // stop sound
                     SoundPlayerOn = false;
                 }
-                this.Focus();
             }
+            showImage(folderFile[selected]);
+            this.Focus();
         }
 
+        //paint event handler, writes text or countdown information into state line
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
-            Size stringSize = Size.Ceiling(e.Graphics.MeasureString(countDownString, countDownStringFont));
-
-            // Create solid brush.
-            SolidBrush grayBrush = new SolidBrush(Color.Gray);
-            // Create rectangle.
-            //Rectangle rect = new Rectangle(pictureBox1.Width - 4 - stringSize.Width, pictureBox1.Height - 4 - stringSize.Height, stringSize.Width, stringSize.Height);
-            Rectangle rect = new Rectangle(4, pictureBox1.Height - 4 - stringSize.Height,pictureBox1.Width, stringSize.Height);
-            // Fill rectangle to screen.
-            e.Graphics.FillRectangle(grayBrush, rect);
-            e.Graphics.DrawString(countDownString, countDownStringFont,
-                countDownBrush, ((pictureBox1.Width - 4) ) - (stringSize.Width ),
-                ((pictureBox1.Height - 4) ) - (stringSize.Height ));
-            string retString;
-            int retStringSize = 4;
-            if (SoundPlayerOn == false)
+            if (this.WindowState == FormWindowState.Maximized)
             {
-                retString = "M ";
-                e.Graphics.DrawString(retString, countDownStringFont, new SolidBrush(Color.Red),retStringSize,((pictureBox1.Height - 4)) - (stringSize.Height));
-                stringSize = Size.Ceiling(e.Graphics.MeasureString(retString, countDownStringFont));
-                retStringSize += stringSize.Width;
+                if (eventTimer.Enabled == false)
+                {   // no event timer running , set break text 
+                    if (breakTxt1Active == false)
+                    {
+                        countDownString = breakTxt1;
+                    }
+                    else
+                    {
+                        countDownString = breakTxt2;
+                    }
+                }
+
+                Size stringSize = Size.Ceiling(e.Graphics.MeasureString(countDownString, countDownStringFont));
+
+                // Create solid brush.
+                SolidBrush grayBrush = new SolidBrush(Color.Gray);
+                // Create rectangle.
+                //Rectangle rect = new Rectangle(pictureBox1.Width - 4 - stringSize.Width, pictureBox1.Height - 4 - stringSize.Height, stringSize.Width, stringSize.Height);
+                Rectangle rect = new Rectangle(4, pictureBox1.Height - 4 - stringSize.Height, pictureBox1.Width, stringSize.Height);
+                // Fill rectangle to screen.
+                e.Graphics.FillRectangle(grayBrush, rect);
+                e.Graphics.DrawString(countDownString, countDownStringFont,
+                    countDownBrush, ((pictureBox1.Width - 4)) - (stringSize.Width),
+                    ((pictureBox1.Height - 4)) - (stringSize.Height));
+                string retString;
+                int retStringSize = 4;
+                if (SoundPlayerOn == false)
+                {
+                    retString = "M ";
+                    e.Graphics.DrawString(retString, countDownStringFont, new SolidBrush(Color.Red), retStringSize, ((pictureBox1.Height - 4)) - (stringSize.Height));
+                    stringSize = Size.Ceiling(e.Graphics.MeasureString(retString, countDownStringFont));
+                    retStringSize += stringSize.Width;
+                }
             }
         }
 
+        //keyboard press event handler for controlling some features eg.music on off
         private void FormKeyPress(object sender, KeyPressEventArgs e)
         {
 
@@ -527,21 +628,19 @@ namespace imageviewer
             {
                 e.Handled = true;
             }
-
+            showImage(folderFile[selected]);
             e.Handled = true;
         }
 
+        //initialize event timer and starts timer if eventtime is in future
         private void initializeEventTimer()
         {
-            // Initialisieren
-            if (config[2].Length > 2)
+
+            if ((config[2].Length > 2)&& (!commandLineCall))
             {
                 eventTime = DateTime.Parse(config[2]);
             }
-            else
-            {
-                eventTime = DateTime.Now;
-            }
+
             dateTimePicker1.Value = eventTime;
             dateTimePicker2.Value = eventTime;
 
@@ -562,6 +661,7 @@ namespace imageviewer
             }
         }
 
+        //eventhandler Timer tick for event countdown calculates remaining minutes seconds and writes result into countdown string 
         private void eventTimer_Tick(object sender, EventArgs e)
         {
             TimeSpan leftTime = eventTime.Subtract(DateTime.Now);
@@ -578,8 +678,8 @@ namespace imageviewer
                 }
                 if (leftTime.TotalSeconds < -10)
                 {
-                    Application.Exit();
                     eventTimer.Stop();
+                    Application.Exit();
                 }
             }
             else
@@ -592,7 +692,8 @@ namespace imageviewer
                 Refresh();
             }
         }
- 
+
+        // eventhandler Button 'Date' (adapt event date)
         private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
         {
             if (eventTimer != null)
@@ -602,12 +703,13 @@ namespace imageviewer
                 config[2] = eventTime.ToString();
                 if (eventTime > DateTime.Now)
                 {
-                    System.IO.File.WriteAllLines("Event.cfg", config);
+                    System.IO.File.WriteAllLines(JokiAutomationPath + "Event.cfg", config);
                     eventTimer.Start();
                 }
             }
         }
 
+        // eventhandler Button 'Time' (adapt event time)
         private void dateTimePicker2_ValueChanged(object sender, EventArgs e)
         {
             if (eventTimer != null)
@@ -618,19 +720,20 @@ namespace imageviewer
                 config[2] = eventTime.ToString();
                 if (eventTime > DateTime.Now)
                 {
-                    System.IO.File.WriteAllLines("Event.cfg", config);
+                    System.IO.File.WriteAllLines(JokiAutomationPath + "Event.cfg", config);
                     eventTimer.Start();
                 }
             }
         }
 
+        // eventhandler Button 'Musik' (adapt path to sound directory)
         private void SoundPath_Click(object sender, EventArgs e)
         {
             folderBrowserDialog1.SelectedPath = config[1];
             if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
             {
                 config[1] = folderBrowserDialog1.SelectedPath;
-                System.IO.File.WriteAllLines("Event.cfg", config);
+                System.IO.File.WriteAllLines(JokiAutomationPath + "Event.cfg", config);
                 fillSoundList();
             }
         }
