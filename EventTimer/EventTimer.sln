@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-VisualStudioVersion = 16.0.30320.27
+VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventTimer", "EventTimer.csproj", "{469765C0-1124-416E-8C20-C25603B57094}"
 EndProject
@@ -19,6 +19,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {EBD15792-B8AE-4A9D-8C3B-1CEDFD09BC17}
+		SolutionGuid = {D3C4CE16-EBBE-4272-B241-1BC233BE7BAC}
 	EndGlobalSection
 EndGlobal

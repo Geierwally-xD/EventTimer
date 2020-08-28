@@ -1,33 +1,30 @@
 using System;
 using System.Drawing;
-using System.Collections;
-using System.ComponentModel;
-using System.Windows.Forms;
-using System.Data;
 using System.IO;
 using System.Media;
+using System.Windows.Forms;
 
-namespace imageviewer
+namespace EventTimer
 {
-	/// <summary>
-	/// Summary description for Form1.
-	/// </summary>
-	public class Form1 : System.Windows.Forms.Form
-	{
-		private System.Windows.Forms.Panel panel1;
-		private System.Windows.Forms.Button button1;
-		private System.Windows.Forms.Button Imagepath;
-		private System.Windows.Forms.Button button3;
-		private System.Windows.Forms.PictureBox pictureBox1;
-		private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
-		private string [] folderFile = null;
+    /// <summary>
+    /// Summary description for Form1.
+    /// </summary>
+    public class Form1 : System.Windows.Forms.Form
+    {
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button Imagepath;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
+        private string[] folderFile = null;
         private string[] folderSound = null;
         private int selected = 0;
-		private int end = 0;
+        private int end = 0;
         private int selectedSound = 0;
         private int endSound = 0;
         private System.Windows.Forms.Timer timer1;
-		private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button button4;
         private DateTimePicker dateTimePicker1;
         private DateTimePicker dateTimePicker2;
         private Button SoundPath;
@@ -47,35 +44,35 @@ namespace imageviewer
         private bool commandLineCall = false;
 
         public Form1()
-		{
-			//
-			// Required for Windows Form Designer support
-			//
-			InitializeComponent();
+        {
+            //
+            // Required for Windows Form Designer support
+            //
+            InitializeComponent();
         }
 
-		/// <summary>
-		/// Clean up any resources being used.
-		/// </summary>
-		protected override void Dispose( bool disposing )
-		{
-			if( disposing )
-			{
-				if (components != null) 
-				{
-					components.Dispose();
-				}
-			}
-			base.Dispose( disposing );
-		}
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (components != null)
+                {
+                    components.Dispose();
+                }
+            }
+            base.Dispose(disposing);
+        }
 
-		#region Windows Form Designer generated code
-		/// <summary>
-		/// Required method for Designer support - do not modify
-		/// the contents of this method with the code editor.
-		/// </summary>
-		private void InitializeComponent()
-		{
+        #region Windows Form Designer generated code
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
             this.components = new System.ComponentModel.Container();
             this.panel1 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
@@ -103,36 +100,36 @@ namespace imageviewer
             this.panel1.Controls.Add(this.pictureBox1);
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1034, 608);
+            this.panel1.Size = new System.Drawing.Size(937, 551);
             this.panel1.TabIndex = 0;
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(9, 9);
+            this.pictureBox1.Location = new System.Drawing.Point(8, 8);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(110, 55);
+            this.pictureBox1.Size = new System.Drawing.Size(100, 50);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
-            this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);            
-			// 
-		    // button1
-            //
+            this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
+            // 
+            // button1
+            // 
             this.button1.BackColor = System.Drawing.Color.White;
-            this.button1.Location = new System.Drawing.Point(13, 551);
+            this.button1.Location = new System.Drawing.Point(10, 430);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(141, 25);
+            this.button1.Size = new System.Drawing.Size(128, 23);
             this.button1.TabIndex = 1;
             this.button1.Text = "<< vorheriges";
-		    this.button1.UseVisualStyleBackColor = false;
+            this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // Imagepath
             // 
             this.Imagepath.BackColor = System.Drawing.Color.White;
-            this.Imagepath.Location = new System.Drawing.Point(309, 551);
+            this.Imagepath.Location = new System.Drawing.Point(278, 430);
             this.Imagepath.Name = "Imagepath";
-            this.Imagepath.Size = new System.Drawing.Size(141, 25);
+            this.Imagepath.Size = new System.Drawing.Size(128, 23);
             this.Imagepath.TabIndex = 2;
             this.Imagepath.Text = "Fotos";
             this.Imagepath.UseVisualStyleBackColor = false;
@@ -141,9 +138,9 @@ namespace imageviewer
             // button3
             // 
             this.button3.BackColor = System.Drawing.Color.White;
-            this.button3.Location = new System.Drawing.Point(161, 551);
+            this.button3.Location = new System.Drawing.Point(144, 430);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(141, 25);
+            this.button3.Size = new System.Drawing.Size(128, 23);
             this.button3.TabIndex = 3;
             this.button3.Text = "nächstes >>";
             this.button3.UseVisualStyleBackColor = false;
@@ -151,8 +148,8 @@ namespace imageviewer
             // 
             // folderBrowserDialog1
             // 
-            this.folderBrowserDialog1.ShowNewFolderButton = false;            
-			// 
+            this.folderBrowserDialog1.ShowNewFolderButton = false;
+            // 
             // timer1
             // 
             this.timer1.Interval = 10000;
@@ -161,9 +158,9 @@ namespace imageviewer
             // button4
             // 
             this.button4.BackColor = System.Drawing.Color.Green;
-            this.button4.Location = new System.Drawing.Point(13, 583);
+            this.button4.Location = new System.Drawing.Point(11, 497);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(289, 25);
+            this.button4.Size = new System.Drawing.Size(262, 23);
             this.button4.TabIndex = 4;
             this.button4.Text = "<< START Diashow >>";
             this.button4.UseVisualStyleBackColor = false;
@@ -171,19 +168,19 @@ namespace imageviewer
             // 
             // dateTimePicker1
             // 
-            this.dateTimePicker1.Location = new System.Drawing.Point(628, 553);
+            this.dateTimePicker1.Location = new System.Drawing.Point(546, 430);
             this.dateTimePicker1.Name = "dateTimePicker1";
-            this.dateTimePicker1.Size = new System.Drawing.Size(249, 22);
+            this.dateTimePicker1.Size = new System.Drawing.Size(226, 22);
             this.dateTimePicker1.TabIndex = 6;
-            this.dateTimePicker1.ValueChanged += new System.EventHandler(this.dateTimePicker1_ValueChanged); 
+            this.dateTimePicker1.ValueChanged += new System.EventHandler(this.dateTimePicker1_ValueChanged);
             // 
             // dateTimePicker2
             // 
             this.dateTimePicker2.Format = System.Windows.Forms.DateTimePickerFormat.Time;
-            this.dateTimePicker2.Location = new System.Drawing.Point(884, 553);
+            this.dateTimePicker2.Location = new System.Drawing.Point(778, 429);
             this.dateTimePicker2.Name = "dateTimePicker2";
             this.dateTimePicker2.ShowUpDown = true;
-            this.dateTimePicker2.Size = new System.Drawing.Size(96, 22);
+            this.dateTimePicker2.Size = new System.Drawing.Size(87, 22);
             this.dateTimePicker2.TabIndex = 7;
             this.dateTimePicker2.ValueChanged += new System.EventHandler(this.dateTimePicker2_ValueChanged);
             // 
@@ -191,19 +188,19 @@ namespace imageviewer
             // 
             this.SoundPath.AutoEllipsis = true;
             this.SoundPath.BackColor = System.Drawing.Color.White;
-            this.SoundPath.Location = new System.Drawing.Point(457, 551);
+            this.SoundPath.Location = new System.Drawing.Point(412, 430);
             this.SoundPath.Name = "SoundPath";
-            this.SoundPath.Size = new System.Drawing.Size(141, 25);
+            this.SoundPath.Size = new System.Drawing.Size(128, 23);
             this.SoundPath.TabIndex = 8;
             this.SoundPath.Text = "Musik";
             this.SoundPath.UseVisualStyleBackColor = false;
-            this.SoundPath.Click += new System.EventHandler(this.SoundPath_Click);            
-			// 
+            this.SoundPath.Click += new System.EventHandler(this.SoundPath_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(106F, 106F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(1035, 607);
+            this.ClientSize = new System.Drawing.Size(885, 550);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.Imagepath);
@@ -226,7 +223,6 @@ namespace imageviewer
             this.panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
-            this.Focus();
 
         }
         #endregion
@@ -238,10 +234,10 @@ namespace imageviewer
         private static Form1 JET;
         [STAThread]
 
-        static void Main(string[] args) 
-		{
-           
-            JET= new Form1();
+        static void Main(string[] args)
+        {
+
+            JET = new Form1();
             if (args.Length > 0)
             {
                 JET.CommandInterpreter(Environment.GetCommandLineArgs());
@@ -256,7 +252,7 @@ namespace imageviewer
             try
             {
                 string cmd = commands[1];
-                if((cmd == "Pause")&&(commands.Length == 4))
+                if ((cmd == "Pause") && (commands.Length == 4))
                 {
                     if (commands[2].Length > 10)
                     {
@@ -267,10 +263,10 @@ namespace imageviewer
                         breakTxt2 = commands[3];
                     }
                 }
-                else if(cmd == "Timer")
+                else if (cmd == "Timer")
                 {
                     DateTime dateNow = DateTime.Now;
-                    eventTime = new DateTime(dateNow.Year,dateNow.Month, dateNow.Day,Convert.ToUInt16(commands[2].Substring(0, 2)), Convert.ToUInt16(commands[2].Substring(3, 2)),0);
+                    eventTime = new DateTime(dateNow.Year, dateNow.Month, dateNow.Day, Convert.ToUInt16(commands[2].Substring(0, 2)), Convert.ToUInt16(commands[2].Substring(3, 2)), 0);
                 }
                 else
                 {
@@ -285,18 +281,18 @@ namespace imageviewer
 
         // eventhandler Button 'Fotos' (adapt path to fotos directory)
         private void button2_Click(object sender, System.EventArgs e)
-		{
+        {
             folderBrowserDialog1.SelectedPath = config[0];
             if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
-			{
+            {
                 config[0] = folderBrowserDialog1.SelectedPath;
                 System.IO.File.WriteAllLines(JokiAutomationPath + "Event.cfg", config);
                 fillImageList();
-			}
-		}
+            }
+        }
 
         // read in images from configured Foto path for slide show
-        private void fillImageList ()
+        private void fillImageList()
         {
             string[] part1 = null, part2 = null, part3 = null;
             part1 = Directory.GetFiles(config[0], "*.jpg");
@@ -304,7 +300,7 @@ namespace imageviewer
             part3 = Directory.GetFiles(config[0], "*.bmp");
 
             folderFile = new string[part1.Length + part2.Length + part3.Length];
-            
+
             Array.Copy(part1, 0, folderFile, 0, part1.Length);
             Array.Copy(part2, 0, folderFile, part1.Length, part2.Length);
             Array.Copy(part3, 0, folderFile, part1.Length + part2.Length, part3.Length);
@@ -330,27 +326,27 @@ namespace imageviewer
         {
             string[] part1 = null/*, part2 = null, part3 = null*/;
             part1 = Directory.GetFiles(config[1], "*.wav");
-           // part2 = Directory.GetFiles(config[1], "*.wav");
-           // part3 = Directory.GetFiles(config[0], "*.xxx");
+            // part2 = Directory.GetFiles(config[1], "*.wav");
+            // part3 = Directory.GetFiles(config[0], "*.xxx");
 
             folderSound = new string[part1.Length /* + part2.Length + part3.Length*/];
 
             Array.Copy(part1, 0, folderSound, 0, part1.Length);
-           // Array.Copy(part2, 0, folderSound, part1.Length, part2.Length);
-           // Array.Copy(part3, 0, folderFile, part1.Length + part2.Length, part3.Length);
+            // Array.Copy(part2, 0, folderSound, part1.Length, part2.Length);
+            // Array.Copy(part3, 0, folderFile, part1.Length + part2.Length, part3.Length);
 
             selectedSound = 0;
             endSound = folderSound.Length;
         }
 
         private void showImage(string path)
-		{
+        {
             //PictureBox1.Location = Screen.PrimaryScreen.WorkingArea.Location;
             Image imgtemp = Image.FromFile(path);
             if (this.WindowState == FormWindowState.Maximized)
             {
-                pictureBox1.Height = Screen.PrimaryScreen.WorkingArea.Height - Screen.PrimaryScreen.WorkingArea.Height/24;
-                pictureBox1.Width = Screen.PrimaryScreen.WorkingArea.Width - Screen.PrimaryScreen.WorkingArea.Width/80;
+                pictureBox1.Height = Screen.PrimaryScreen.WorkingArea.Height - Screen.PrimaryScreen.WorkingArea.Height / 24;
+                pictureBox1.Width = Screen.PrimaryScreen.WorkingArea.Width - Screen.PrimaryScreen.WorkingArea.Width / 80;
             }
             else
             {
@@ -359,11 +355,11 @@ namespace imageviewer
             }
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
             pictureBox1.Image = imgtemp;
-		}
+        }
 
         // show previous image, if format is supported
         private void prevImage()
-		{
+        {
             try
             {
                 if (selected == 0)
@@ -384,8 +380,8 @@ namespace imageviewer
         }
 
         // show next image, if format is supported
-		private void nextImage()
-		{
+        private void nextImage()
+        {
             try
             {
                 if (selected == folderFile.Length - 1)
@@ -403,7 +399,7 @@ namespace imageviewer
                     breakTxt1Active = !breakTxt1Active;
                 }
             }
-            catch(Exception)
+            catch (Exception)
             {
                 MessageBox.Show("Nicht unterstütztes Image - Format!\njpeg, bmp und jpg sind möglich");
             }
@@ -428,7 +424,7 @@ namespace imageviewer
                 simpleSound.PlayLooping();
                 SoundPlayerOn = true;
             }
-            catch(Exception)
+            catch (Exception)
             {
                 MessageBox.Show("Nicht unterstütztes Audioformat!\nEs wird nur *.wav unterstützt");
             }
@@ -436,47 +432,49 @@ namespace imageviewer
 
         // eventhandler Button 'vorheriges'
         private void button1_Click(object sender, System.EventArgs e)
-		{
-			prevImage();
-		}
+        {
+            prevImage();
+        }
 
         // eventhandler Button 'nächstes'
         private void button3_Click(object sender, System.EventArgs e)
-		{
-			nextImage();
-		}
+        {
+            nextImage();
+        }
 
-		private void timer1_Tick(object sender, System.EventArgs e)
-		{
-			nextImage();
-		}
+        private void timer1_Tick(object sender, System.EventArgs e)
+        {
+            nextImage();
+        }
 
         // eventhandler Button 'Start / Stop Diashow' (start and stop slide show)
         private void button4_Click(object sender, System.EventArgs e)
-		{
-			if(timer1.Enabled == true)
-			{
-				timer1.Enabled = false;
-				button4.Text = "<< START Diashow >>";
+        {
+            if (timer1.Enabled == true)
+            {
+                timer1.Enabled = false;
+                button4.Text = "<< START Diashow >>";
                 button4.BackColor = Color.Green;
-			}
-			else
-			{
-				timer1.Enabled = true;
-				button4.Text = "<< STOP Diashow >>";
+            }
+            else
+            {
+                timer1.Enabled = true;
+                button4.Text = "<< STOP Diashow >>";
                 button4.BackColor = Color.Red;
             }
         }
 
         //eventhandler form load, read in configfile and initialize slice and sound lists
-		private void Form1_Load(object sender, System.EventArgs e)
-		{
+        private void Form1_Load(object sender, System.EventArgs e)
+        {
             if (File.Exists(JokiAutomationPath + "Event.cfg"))
             {
                 config = System.IO.File.ReadAllLines(JokiAutomationPath + "Event.cfg");
                 if (Directory.Exists(config[0]))
                 {
                     fillImageList();
+                    this.ResumeLayout(false);
+                    this.Focus();
                 }
                 else
                 {
@@ -484,11 +482,12 @@ namespace imageviewer
                     button3.Enabled = false;
                     button4.Enabled = false;
                 }
-                if(Directory.Exists(config[1]))
+                if (Directory.Exists(config[1]))
                 {
                     fillSoundList();
                 }
                 initializeEventTimer();
+
                 if (commandLineCall)
                 {
                     JET.WindowState = FormWindowState.Maximized;
@@ -496,15 +495,15 @@ namespace imageviewer
             }
             else
             {
-                MessageBox.Show("Fehler bei Lesen Konfigurationsfile\nSystemvariable JokiAutomation fehlt\nbzw. zeit auf falschen Pfad");
+                MessageBox.Show("Fehler bei Lesen Konfigurationsfile\nSystemvariable JokiAutomation fehlt\nbzw. zeigt auf falschen Pfad");
                 Application.Exit();
             }
         }
 
         //form resize event handler controls features during maximize or minimize window eg. start\stop dia show and music enable buttons
         private void Form1_Resize(object sender, EventArgs e)
-        { 
-           if (this.WindowState == FormWindowState.Maximized)
+        {
+            if (this.WindowState == FormWindowState.Maximized)
             {
                 button4.Text = "<< STOP Diashow >>";
                 button4.BackColor = Color.Red;
@@ -537,7 +536,7 @@ namespace imageviewer
                 dateTimePicker1.Enabled = true;
                 dateTimePicker2.Enabled = true;
                 SoundPath.Enabled = true;
-                if ((folderFile != null)&&(folderFile.GetLength(0)>0))
+                if ((folderFile != null) && (folderFile.GetLength(0) > 0))
                 {
                     button1.Enabled = true;
                     Imagepath.Enabled = true;
@@ -553,8 +552,11 @@ namespace imageviewer
                     SoundPlayerOn = false;
                 }
             }
-            showImage(folderFile[selected]);
-            this.Focus();
+            if (folderFile != null)
+            {
+                showImage(folderFile[selected]);
+                this.Focus();
+            }
         }
 
         //paint event handler, writes text or countdown information into state line
@@ -602,7 +604,7 @@ namespace imageviewer
         private void FormKeyPress(object sender, KeyPressEventArgs e)
         {
 
-            if(e.KeyChar == 0x000d) //<ctrl + 'M'>
+            if (e.KeyChar == 0x000d) //<ctrl + 'M'>
             {
                 if (this.WindowState == FormWindowState.Maximized)
                 {
@@ -618,7 +620,9 @@ namespace imageviewer
                             nextSound();       // start sound
                         }
                     }
+                    showImage(folderFile[selected]);
                 }
+                e.Handled = true;
             }
             else if (e.KeyChar == 0x0006) //<ctrl + 'F'>
             {
@@ -628,15 +632,14 @@ namespace imageviewer
             {
                 e.Handled = true;
             }
-            showImage(folderFile[selected]);
-            e.Handled = true;
+
         }
 
         //initialize event timer and starts timer if eventtime is in future
         private void initializeEventTimer()
         {
 
-            if ((config[2].Length > 2)&& (!commandLineCall))
+            if ((config[2].Length > 2) && (!commandLineCall))
             {
                 eventTime = DateTime.Parse(config[2]);
             }
@@ -685,7 +688,7 @@ namespace imageviewer
             else
             {
                 countDownString = /*leftTime.Hours.ToString("00") + ":" +*/
-                  "JoKi Hersbruck Livegottesdienst beginnt in "+
+                  "JoKi Hersbruck Livegottesdienst beginnt in " +
                   leftTime.Minutes.ToString("00") + ":" +
                   leftTime.Seconds.ToString("00") + ":" +
                    (leftTime.Milliseconds / 10).ToString("00") + " Minuten";
