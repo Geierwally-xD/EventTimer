@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Media;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace EventTimer
@@ -242,6 +243,7 @@ namespace EventTimer
             {
                 JET.CommandInterpreter(Environment.GetCommandLineArgs());
             }
+            Application.ApplicationExit += new EventHandler(JET.OnApplicationExit);
             Application.Run(JET);
         }
 
@@ -674,13 +676,18 @@ namespace EventTimer
                 countDownString = "00:00:00";
                 Refresh();
 
-                if (simpleSound != null)
-                {
-                    simpleSound.Stop();
-                    SoundPlayerOn = false;
-                }
+                System.Diagnostics.ProcessStartInfo JoKiAutomation = new ProcessStartInfo();
+                JoKiAutomation.FileName = Environment.GetEnvironmentVariable("JokiAutomation") + "JokiAutomation.exe";
+                JoKiAutomation.Arguments = "Altar";
+                Process.Start(JoKiAutomation);
+
                 if (leftTime.TotalSeconds < -10)
                 {
+                    if (simpleSound != null)
+                    {
+                        simpleSound.Stop();
+                        SoundPlayerOn = false;
+                    }
                     eventTimer.Stop();
                     Application.Exit();
                 }
@@ -739,6 +746,22 @@ namespace EventTimer
                 System.IO.File.WriteAllLines(JokiAutomationPath + "Event.cfg", config);
                 fillSoundList();
             }
+        }
+
+        private void OnApplicationExit(object sender, EventArgs e)
+        {
+            // When the application is exiting, write the application data to the
+                try
+                {
+                    System.Diagnostics.ProcessStartInfo JoKiAutomation = new ProcessStartInfo();
+                    JoKiAutomation.FileName = Environment.GetEnvironmentVariable("JokiAutomation") + "JokiAutomation.exe";
+                    JoKiAutomation.Arguments = "Altar";
+                    Process.Start(JoKiAutomation);
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("JoKiAutomation\nFehler in JoKi Automation Kommandozeilenaufruf");
+                }
         }
     }
 }
