@@ -39,10 +39,12 @@ namespace EventTimer
         SolidBrush countDownBrush;
         private DateTime eventTime = DateTime.Now;
         private Timer eventTimer;
+        private Timer shutdowntimer = new Timer(); // shut down sequence timer 10 seconds
         private SoundPlayer simpleSound;
         private bool SoundPlayerOn = false;
         private bool breakTxt1Active = false;
         private bool commandLineCall = false;
+        private bool ShutDownSequence = false;
 
         public Form1()
         {
@@ -224,6 +226,8 @@ namespace EventTimer
             this.panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
+            this.shutdowntimer.Tick += new EventHandler(_shutdowntimer_Elapsed);
+
 
         }
         #endregion
@@ -599,6 +603,13 @@ namespace EventTimer
                     stringSize = Size.Ceiling(e.Graphics.MeasureString(retString, countDownStringFont));
                     retStringSize += stringSize.Width;
                 }
+                if (ShutDownSequence == true)
+                {
+                    retString = "S ";
+                    e.Graphics.DrawString(retString, countDownStringFont, new SolidBrush(Color.Red), retStringSize, ((pictureBox1.Height - 4)) - (stringSize.Height));
+                    stringSize = Size.Ceiling(e.Graphics.MeasureString(retString, countDownStringFont));
+                    retStringSize += stringSize.Width;
+                }
             }
         }
 
@@ -632,9 +643,29 @@ namespace EventTimer
             }
             else if (e.KeyChar == 0x0013) //<ctrl + 'S'>
             {
+                ShutDownSequence = true;
+                System.Diagnostics.ProcessStartInfo JoKiAutomation = new ProcessStartInfo();
+                JoKiAutomation.FileName = Environment.GetEnvironmentVariable("JokiAutomation") + "JokiAutomation.exe";
+                JoKiAutomation.Arguments = "Altar";
+                Process.Start(JoKiAutomation);
+                shutdowntimer.Interval = 10000;  //elapsed event after 10 seconds
+                shutdowntimer.Start();
                 e.Handled = true;
+                showImage(folderFile[selected]);
             }
 
+        }
+
+        // shutdown timer event
+        void _shutdowntimer_Elapsed(object sender, EventArgs e) 
+        {
+            if (simpleSound != null)
+            {
+                simpleSound.Stop();
+                SoundPlayerOn = false;
+            }
+            eventTimer.Stop();
+            Application.Exit();
         }
 
         //initialize event timer and starts timer if eventtime is in future
