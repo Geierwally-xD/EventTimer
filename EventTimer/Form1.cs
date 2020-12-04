@@ -1,9 +1,13 @@
 using System;
 using System.Drawing;
+using System.Collections;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Data;
 using System.IO;
 using System.Media;
 using System.Diagnostics;
-using System.Windows.Forms;
+
 
 namespace EventTimer
 {
@@ -39,7 +43,7 @@ namespace EventTimer
         SolidBrush countDownBrush;
         private DateTime eventTime = DateTime.Now;
         private Timer eventTimer;
-        private Timer shutdowntimer = new Timer(); // shut down sequence timer 10 seconds
+        private Timer shutdowntimer; // shut down sequence timer 10 seconds
         private SoundPlayer simpleSound;
         private bool SoundPlayerOn = false;
         private bool breakTxt1Active = false;
@@ -226,9 +230,6 @@ namespace EventTimer
             this.panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
-            this.shutdowntimer.Tick += new EventHandler(_shutdowntimer_Elapsed);
-
-
         }
         #endregion
 
@@ -681,11 +682,13 @@ namespace EventTimer
             dateTimePicker2.Value = eventTime;
 
             eventTimer = new Timer();
+            shutdowntimer = new Timer(); // shut down sequence timer 10 seconds
             countDownStringFont = new Font(new FontFamily("Arial"), 25,
                                            FontStyle.Bold);
             countDownBrush = new SolidBrush(Color.White);
             // Events registrieren
             eventTimer.Tick += new EventHandler(eventTimer_Tick);
+            shutdowntimer.Tick += new EventHandler(_shutdowntimer_Elapsed);
 
             // Eigenschaften setzen und Timer starten
             this.DoubleBuffered = true;
@@ -793,6 +796,18 @@ namespace EventTimer
                 {
                     MessageBox.Show("JoKiAutomation\nFehler in JoKi Automation Kommandozeilenaufruf");
                 }
+        }
+
+        private const int WS_SYSMENU = 0x80000; //disable windows close on menu
+
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                CreateParams cp = base.CreateParams;
+                cp.Style &= ~WS_SYSMENU;
+                return cp;
+            }
         }
     }
 }
