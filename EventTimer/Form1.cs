@@ -7,7 +7,9 @@ using System.Data;
 using System.IO;
 using System.Media;
 using System.Diagnostics;
-
+using StreamAlive;
+using StreamAlive.Google.Apis.YouTube.Samples;
+using System.Reflection;
 
 namespace EventTimer
 {
@@ -34,7 +36,7 @@ namespace EventTimer
         private DateTimePicker dateTimePicker2;
         private Button SoundPath;
         private System.ComponentModel.IContainer components;
-        private string[] config = { " ", " ", " " };
+        private string[] config = { " ", " ", " ", " " };
         private string JokiAutomationPath = Environment.GetEnvironmentVariable("JokiAutomation");
         private string countDownString;
         private string breakTxt1 = "Dieser Teil des Gottesdienstes wird aus Datenschutzgründen nicht live übertragen.";
@@ -43,12 +45,16 @@ namespace EventTimer
         SolidBrush countDownBrush;
         private DateTime eventTime = DateTime.Now;
         private Timer eventTimer;
+        private Timer streamAlivetimer;
         private Timer shutdowntimer; // shut down sequence timer 10 seconds
         private SoundPlayer simpleSound;
         private bool SoundPlayerOn = false;
         private bool breakTxt1Active = false;
         private bool commandLineCall = false;
         private bool ShutDownSequence = false;
+        private static Form1 JET;
+        private static Search SEARCH;
+
 
         public Form1()
         {
@@ -233,23 +239,54 @@ namespace EventTimer
         }
         #endregion
 
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         /// 
-        private static Form1 JET;
         [STAThread]
-
         static void Main(string[] args)
         {
 
             JET = new Form1();
+            SEARCH = new Search();
             if (args.Length > 0)
             {
                 JET.CommandInterpreter(Environment.GetCommandLineArgs());
             }
             Application.ApplicationExit += new EventHandler(JET.OnApplicationExit);
             Application.Run(JET);
+        }
+
+        // write error information to logfile
+        public static void writeLog(String path, String str)
+        {
+            String filename = Path.GetDirectoryName(path).ToString() + "\\EventTimerLog.txt";
+            if (!File.Exists(filename))
+            {
+                File.WriteAllText(filename, str + "\n");
+            }
+            else
+            {
+                File.AppendAllText(filename, str + "\n");
+            }
+            return;
+        }
+        // checks live stream is active
+        private static async void checkLiveStream()
+        {
+            try
+            {
+                await SEARCH.Run();
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine("Error: " + ex.Message);
+                string app_path = Assembly.GetExecutingAssembly().Location;
+                writeLog(app_path, ex.Message);
+                SEARCH.youtubeException = true;
+            }
         }
 
         // interprets command line arguments if called from JokiAutomation - App
@@ -604,6 +641,20 @@ namespace EventTimer
                     stringSize = Size.Ceiling(e.Graphics.MeasureString(retString, countDownStringFont));
                     retStringSize += stringSize.Width;
                 }
+                if (SEARCH.streamAlive == false) // no live stream
+                {
+                    retString = "I ";
+                    e.Graphics.DrawString(retString, countDownStringFont, new SolidBrush(Color.Red), retStringSize, ((pictureBox1.Height - 4)) - (stringSize.Height));
+                    stringSize = Size.Ceiling(e.Graphics.MeasureString(retString, countDownStringFont));
+                    retStringSize += stringSize.Width;
+                }
+                if (SEARCH.youtubeException == true) // youtube exception
+                {
+                    retString = "Ex ";
+                    e.Graphics.DrawString(retString, countDownStringFont, new SolidBrush(Color.Red), retStringSize, ((pictureBox1.Height - 4)) - (stringSize.Height));
+                    stringSize = Size.Ceiling(e.Graphics.MeasureString(retString, countDownStringFont));
+                    retStringSize += stringSize.Width;
+                }
                 if (ShutDownSequence == true)
                 {
                     retString = "S ";
@@ -669,6 +720,15 @@ namespace EventTimer
             Application.Exit();
         }
 
+        // stream alive timer event
+        void _streamAlivetimer_Elapsed(object sender, EventArgs e)
+        {
+            if (SEARCH.youtubeException == false)
+            {
+                checkLiveStream();
+            }
+        }
+
         //initialize event timer and starts timer if eventtime is in future
         private void initializeEventTimer()
         {
@@ -678,17 +738,26 @@ namespace EventTimer
                 eventTime = DateTime.Parse(config[2]);
             }
 
+            if ((config[3].Length > 8) ) // for live stream check
+            {
+                SEARCH.searchString = config[3];
+            }
+
             dateTimePicker1.Value = eventTime;
             dateTimePicker2.Value = eventTime;
 
             eventTimer = new Timer();
             shutdowntimer = new Timer(); // shut down sequence timer 10 seconds
+            streamAlivetimer = new Timer(); // check live stream started each 10 seconds
             countDownStringFont = new Font(new FontFamily("Arial"), 25,
                                            FontStyle.Bold);
             countDownBrush = new SolidBrush(Color.White);
             // Events registrieren
             eventTimer.Tick += new EventHandler(eventTimer_Tick);
             shutdowntimer.Tick += new EventHandler(_shutdowntimer_Elapsed);
+            streamAlivetimer.Tick += new EventHandler(_streamAlivetimer_Elapsed);
+            streamAlivetimer.Interval = 10000;  // stream alive timer elapsed event after 10 seconds
+            streamAlivetimer.Start();
 
             // Eigenschaften setzen und Timer starten
             this.DoubleBuffered = true;

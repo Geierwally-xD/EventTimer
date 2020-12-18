@@ -10,6 +10,14 @@
     <CopyProjectOption>0</CopyProjectOption>
     <ProjectView>ProjectFiles</ProjectView>
     <ProjectTrust>0</ProjectTrust>
+    <PublishUrlHistory>publish\</PublishUrlHistory>
+    <InstallUrlHistory />
+    <SupportUrlHistory />
+    <UpdateUrlHistory />
+    <BootstrapperUrlHistory />
+    <ErrorReportUrlHistory />
+    <FallbackCulture>de-DE</FallbackCulture>
+    <VerifyUploadedFiles>false</VerifyUploadedFiles>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <EnableASPDebugging>false</EnableASPDebugging>
@@ -19,8 +27,7 @@
     <RemoteDebugEnabled>false</RemoteDebugEnabled>
     <RemoteDebugMachine />
     <StartAction>Project</StartAction>
-    <StartArguments>
-    </StartArguments>
+    <StartArguments>"Timer" "10:00"</StartArguments>
     <StartPage />
     <StartProgram />
     <StartURL />
