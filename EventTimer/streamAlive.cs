@@ -31,26 +31,28 @@ namespace StreamAlive
 
             public bool streamAlive = false;
             public bool youtubeException = false;
-            public string searchString = "https://www.youtube.com/watch?v=Kd-HCiN5joA";
+            public string searchString = "UCmlrbl6BFOyYcxwnsoVhqbA";
 
             public async Task Run()
             {
                 var youtubeService = new YouTubeService(new BaseClientService.Initializer()
                 {
-                    ApiKey = "your own App Key",
+                    ApiKey = "YOUR KEY", 
                     ApplicationName = "EventTimer"
                 });
 
                 var searchListRequest = youtubeService.Search.List("snippet");
+                searchListRequest.Type = "video";
                 searchListRequest.Q = "Johanneskirche Hersbruck"; /*searchString;*/ // search term.
-                searchListRequest.MaxResults = 50;
+               // searchListRequest.ChannelId = searchString;
+                searchListRequest.MaxResults = 100;
 
                 // Call the search.list method to retrieve results matching the specified query term.
                 var searchListResponse = await searchListRequest.ExecuteAsync();
 
                 List<string> videos = new List<string>();
-                List<string> channels = new List<string>();
-                List<string> playlists = new List<string>();
+               // List<string> channels = new List<string>();
+               // List<string> playlists = new List<string>();
 
                 // Add each result to the appropriate list, and then display the lists of
                 // matching videos, channels, and playlists.
@@ -62,24 +64,25 @@ namespace StreamAlive
                             videos.Add(String.Format("{0} ({1})", searchResult.Snippet.LiveBroadcastContent, searchResult.Id.VideoId));
                             break;
 
-                        case "youtube#channel":
+                        /*case "youtube#channel":
                             channels.Add(String.Format("{0} ({1})", searchResult.Snippet.LiveBroadcastContent, searchResult.Id.ChannelId));
                             break;
 
                         case "youtube#playlist":
                             playlists.Add(String.Format("{0} ({1})", searchResult.Snippet.Title, searchResult.Id.PlaylistId));
-                            break;
+                            break;*/
                     }
                 }
-                if (channels.Count > 0)
+                if (videos.Count > 0)
                 {
-                    if (channels[0].Substring(0, 4) == "live")
+                    streamAlive = false;
+                    for (int count = 0; count < videos.Count; count++)
                     {
-                        streamAlive = true;
-                    }
-                    else //"none" or "upcoming"
-                    {
-                        streamAlive = false;
+                        if (videos[count].Substring(0, 4) == "live") // otherwise "none" or "upcoming"
+                        {
+                            streamAlive = true;
+                            Console.WriteLine(videos[count]);
+                        }
                     }
                 }
                 //Console.WriteLine(String.Format("Videos:\n{0}\n", string.Join("\n", videos)));

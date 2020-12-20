@@ -723,9 +723,13 @@ namespace EventTimer
         // stream alive timer event
         void _streamAlivetimer_Elapsed(object sender, EventArgs e)
         {
-            if (SEARCH.youtubeException == false)
+            if ((SEARCH.youtubeException == false)&&(SEARCH.streamAlive == false)&&(eventTimer.Enabled == true))
             {
                 checkLiveStream();
+            }
+            else
+            {
+                streamAlivetimer.Stop();
             }
         }
 
@@ -756,7 +760,7 @@ namespace EventTimer
             eventTimer.Tick += new EventHandler(eventTimer_Tick);
             shutdowntimer.Tick += new EventHandler(_shutdowntimer_Elapsed);
             streamAlivetimer.Tick += new EventHandler(_streamAlivetimer_Elapsed);
-            streamAlivetimer.Interval = 10000;  // stream alive timer elapsed event after 10 seconds
+            streamAlivetimer.Interval = 60000;  // stream alive timer elapsed event after 60 seconds
             streamAlivetimer.Start();
 
             // Eigenschaften setzen und Timer starten
