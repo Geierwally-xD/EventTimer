@@ -641,7 +641,7 @@ namespace EventTimer
                     stringSize = Size.Ceiling(e.Graphics.MeasureString(retString, countDownStringFont));
                     retStringSize += stringSize.Width;
                 }
-                if (SEARCH.streamAlive == false) // no live stream
+                if ((SEARCH.streamAlive == false)&& (eventTimer.Enabled == true))// no live stream
                 {
                     retString = "I ";
                     e.Graphics.DrawString(retString, countDownStringFont, new SolidBrush(Color.Red), retStringSize, ((pictureBox1.Height - 4)) - (stringSize.Height));
@@ -740,11 +740,6 @@ namespace EventTimer
             if ((config[2].Length > 2) && (!commandLineCall))
             {
                 eventTime = DateTime.Parse(config[2]);
-            }
-
-            if ((config[3].Length > 8) ) // for live stream check
-            {
-                SEARCH.searchString = config[3];
             }
 
             dateTimePicker1.Value = eventTime;

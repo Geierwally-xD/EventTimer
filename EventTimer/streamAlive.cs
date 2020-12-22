@@ -31,13 +31,12 @@ namespace StreamAlive
 
             public bool streamAlive = false;
             public bool youtubeException = false;
-            public string searchString = "UCmlrbl6BFOyYcxwnsoVhqbA";
 
             public async Task Run()
             {
                 var youtubeService = new YouTubeService(new BaseClientService.Initializer()
                 {
-                    ApiKey = "YOUR KEY", 
+                    ApiKey = "AIzaSyAhAc8ke9HZbMzTEdnKS-oUZIdNnPlg7rw", 
                     ApplicationName = "EventTimer"
                 });
 
