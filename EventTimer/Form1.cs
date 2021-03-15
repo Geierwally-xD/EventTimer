@@ -16,7 +16,7 @@ namespace EventTimer
     /// <summary>
     /// Summary description for Form1.
     /// </summary>
-    public class Form1 : System.Windows.Forms.Form
+    public class Form1 : System.Windows.Forms.Form, IMessageFilter
     {
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button button1;
@@ -52,9 +52,40 @@ namespace EventTimer
         private bool breakTxt1Active = false;
         private bool commandLineCall = false;
         private bool ShutDownSequence = false;
+		private bool SwitchJoKiAutomation = false;
         private static Form1 JET;
         private static Search SEARCH;
+        private bool StartSound = false;
+        const int WM_LBUTTONDOWN = 0x201;
+        const int WM_LBUTTONUP = 0x202;
+        const int WM_LBUTTONDBLCLK = 0x203;
+        const int WM_RBUTTONDOWN = 0x204;
+        const int WM_RBUTTONUP = 0x205;
+        const int WM_RBUTTONDBLCLK = 0x206;
 
+        bool IMessageFilter.PreFilterMessage(ref Message m)
+        {
+            return (
+            m.Msg == WM_LBUTTONDOWN || m.Msg == WM_LBUTTONUP ||
+            m.Msg == WM_LBUTTONDBLCLK || m.Msg == WM_RBUTTONDOWN ||
+            m.Msg == WM_RBUTTONUP || m.Msg == WM_RBUTTONDBLCLK);
+        }
+
+        public void MausAktivieren()
+        {
+           //Cursor.Clip = altesRect; 
+           Cursor.Show();
+           Application.RemoveMessageFilter(this);
+        }
+
+        public void MausDeaktivieren()
+        {
+            //altesRect = Cursor.Clip;
+            //neuesRect = new Rectangle(100, 100, 1, 1);
+            //Cursor.Clip = neuesRect; 
+            Cursor.Hide();
+            Application.AddMessageFilter(this);
+        }       
 
         public Form1()
         {
@@ -223,12 +254,16 @@ namespace EventTimer
             this.Controls.Add(this.button3);
             this.Controls.Add(this.panel1);
             this.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.KeyPreview = true;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "Form1";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "JoKi Gottesdienst";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FormKeyPress);
@@ -236,6 +271,7 @@ namespace EventTimer
             this.panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
+
         }
         #endregion
 
@@ -254,6 +290,7 @@ namespace EventTimer
             {
                 JET.CommandInterpreter(Environment.GetCommandLineArgs());
             }
+            JET.MausDeaktivieren();
             Application.ApplicationExit += new EventHandler(JET.OnApplicationExit);
             Application.Run(JET);
         }
@@ -374,7 +411,6 @@ namespace EventTimer
             // part3 = Directory.GetFiles(config[0], "*.xxx");
 
             folderSound = new string[part1.Length /* + part2.Length + part3.Length*/];
-
             Array.Copy(part1, 0, folderSound, 0, part1.Length);
             // Array.Copy(part2, 0, folderSound, part1.Length, part2.Length);
             // Array.Copy(part3, 0, folderFile, part1.Length + part2.Length, part3.Length);
@@ -636,10 +672,18 @@ namespace EventTimer
                 int retStringSize = 4;
                 if (SoundPlayerOn == false)
                 {
-                    retString = "M ";
-                    e.Graphics.DrawString(retString, countDownStringFont, new SolidBrush(Color.Red), retStringSize, ((pictureBox1.Height - 4)) - (stringSize.Height));
-                    stringSize = Size.Ceiling(e.Graphics.MeasureString(retString, countDownStringFont));
-                    retStringSize += stringSize.Width;
+                    if (StartSound == false)
+                    {
+                        StartSound = true;
+                        nextSound();
+                    }
+                    else
+                    {
+                        retString = "M ";
+                        e.Graphics.DrawString(retString, countDownStringFont, new SolidBrush(Color.Red), retStringSize, ((pictureBox1.Height - 4)) - (stringSize.Height));
+                        stringSize = Size.Ceiling(e.Graphics.MeasureString(retString, countDownStringFont));
+                        retStringSize += stringSize.Width;
+                    }
                 }
                 if ((SEARCH.streamAlive == false)&& (eventTimer.Enabled == true))// no live stream
                 {
@@ -695,13 +739,16 @@ namespace EventTimer
             }
             else if (e.KeyChar == 0x0013) //<ctrl + 'S'>
             {
-                ShutDownSequence = true;
-                System.Diagnostics.ProcessStartInfo JoKiAutomation = new ProcessStartInfo();
-                JoKiAutomation.FileName = Environment.GetEnvironmentVariable("JokiAutomation") + "JokiAutomation.exe";
-                JoKiAutomation.Arguments = "Altar";
-                Process.Start(JoKiAutomation);
-                shutdowntimer.Interval = 10000;  //elapsed event after 10 seconds
-                shutdowntimer.Start();
+                if (!ShutDownSequence)
+                {
+                    ShutDownSequence = true;
+                    System.Diagnostics.ProcessStartInfo JoKiAutomation = new ProcessStartInfo();
+                    JoKiAutomation.FileName = Environment.GetEnvironmentVariable("JokiAutomation") + "JokiAutomation.exe";
+                    JoKiAutomation.Arguments = "Altar";
+                    Process.Start(JoKiAutomation);
+                    shutdowntimer.Interval = 10000;  //elapsed event after 10 seconds
+                    shutdowntimer.Start();
+                }
                 e.Handled = true;
                 showImage(folderFile[selected]);
             }
@@ -778,12 +825,7 @@ namespace EventTimer
                 countDownString = "00:00:00";
                 Refresh();
 
-                System.Diagnostics.ProcessStartInfo JoKiAutomation = new ProcessStartInfo();
-                JoKiAutomation.FileName = Environment.GetEnvironmentVariable("JokiAutomation") + "JokiAutomation.exe";
-                JoKiAutomation.Arguments = "Altar";
-                Process.Start(JoKiAutomation);
-
-                if (leftTime.TotalSeconds < -10)
+                if (leftTime.TotalSeconds < -2)
                 {
                     if (simpleSound != null)
                     {
@@ -796,11 +838,22 @@ namespace EventTimer
             }
             else
             {
+                if (leftTime.TotalSeconds < 30)
+                {
+                    if (!SwitchJoKiAutomation)
+                    {
+                        SwitchJoKiAutomation = true;
+                        System.Diagnostics.ProcessStartInfo JoKiAutomation = new ProcessStartInfo();
+                        JoKiAutomation.FileName = Environment.GetEnvironmentVariable("JokiAutomation") + "JokiAutomation.exe";
+                        JoKiAutomation.Arguments = "Altar";
+                        Process.Start(JoKiAutomation);
+                    }
+                }
                 countDownString = /*leftTime.Hours.ToString("00") + ":" +*/
-                  "JoKi Hersbruck Livegottesdienst beginnt in " +
-                  leftTime.Minutes.ToString("00") + ":" +
-                  leftTime.Seconds.ToString("00") + ":" +
-                   (leftTime.Milliseconds / 10).ToString("00") + " Minuten";
+                "JoKi Hersbruck Livegottesdienst beginnt in " +
+                leftTime.Minutes.ToString("00") + ":" +
+                leftTime.Seconds.ToString("00") + ":" +
+                (leftTime.Milliseconds / 10).ToString("00") + " Minuten";
                 Refresh();
             }
         }
@@ -855,10 +908,14 @@ namespace EventTimer
             // When the application is exiting, write the application data to the
                 try
                 {
-                    System.Diagnostics.ProcessStartInfo JoKiAutomation = new ProcessStartInfo();
-                    JoKiAutomation.FileName = Environment.GetEnvironmentVariable("JokiAutomation") + "JokiAutomation.exe";
-                    JoKiAutomation.Arguments = "Altar";
-                    Process.Start(JoKiAutomation);
+                    if (!ShutDownSequence)
+                    {
+                        ShutDownSequence = true;
+                        System.Diagnostics.ProcessStartInfo JoKiAutomation = new ProcessStartInfo();
+                        JoKiAutomation.FileName = Environment.GetEnvironmentVariable("JokiAutomation") + "JokiAutomation.exe";
+                        JoKiAutomation.Arguments = "Altar";
+                        Process.Start(JoKiAutomation);
+                    }
                 }
                 catch (Exception)
                 {
