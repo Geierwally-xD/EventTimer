@@ -746,7 +746,7 @@ namespace EventTimer
                     JoKiAutomation.FileName = Environment.GetEnvironmentVariable("JokiAutomation") + "JokiAutomation.exe";
                     JoKiAutomation.Arguments = "Altar";
                     Process.Start(JoKiAutomation);
-                    shutdowntimer.Interval = 10000;  //elapsed event after 10 seconds
+                    shutdowntimer.Interval = 20000;  //elapsed event after 30 seconds
                     shutdowntimer.Start();
                 }
                 e.Handled = true;
@@ -843,6 +843,7 @@ namespace EventTimer
                     if (!SwitchJoKiAutomation)
                     {
                         SwitchJoKiAutomation = true;
+                        ShutDownSequence = true;
                         System.Diagnostics.ProcessStartInfo JoKiAutomation = new ProcessStartInfo();
                         JoKiAutomation.FileName = Environment.GetEnvironmentVariable("JokiAutomation") + "JokiAutomation.exe";
                         JoKiAutomation.Arguments = "Altar";
