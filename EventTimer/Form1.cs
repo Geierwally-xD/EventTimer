@@ -572,6 +572,8 @@ namespace EventTimer
                 {
                     JET.WindowState = FormWindowState.Maximized;
                 }
+                ShutDownSequence = false;
+                SwitchJoKiAutomation = false;
             }
             else
             {
@@ -746,7 +748,7 @@ namespace EventTimer
                     JoKiAutomation.FileName = Environment.GetEnvironmentVariable("JokiAutomation") + "JokiAutomation.exe";
                     JoKiAutomation.Arguments = "Altar";
                     Process.Start(JoKiAutomation);
-                    shutdowntimer.Interval = 20000;  //elapsed event after 30 seconds
+                    shutdowntimer.Interval = 10000;  //elapsed event after 10 seconds
                     shutdowntimer.Start();
                 }
                 e.Handled = true;
@@ -917,6 +919,7 @@ namespace EventTimer
                         JoKiAutomation.Arguments = "Altar";
                         Process.Start(JoKiAutomation);
                     }
+                JET.MausAktivieren();
                 }
                 catch (Exception)
                 {
