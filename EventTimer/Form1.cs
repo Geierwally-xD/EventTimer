@@ -826,17 +826,13 @@ namespace EventTimer
                 //countDownString = "00:00:00:00";
                 countDownString = "00:00:00";
                 Refresh();
-
-                if (leftTime.TotalSeconds < -2)
+                if (simpleSound != null)
                 {
-                    if (simpleSound != null)
-                    {
-                        simpleSound.Stop();
-                        SoundPlayerOn = false;
-                    }
-                    eventTimer.Stop();
-                    Application.Exit();
+                    simpleSound.Stop();
+                    SoundPlayerOn = false;
                 }
+                eventTimer.Stop();
+                Application.Exit();
             }
             else
             {
@@ -851,6 +847,16 @@ namespace EventTimer
                         JoKiAutomation.Arguments = "Altar";
                         Process.Start(JoKiAutomation);
                     }
+                }
+                if ((leftTime.TotalSeconds < 24) && (simpleSound != null))
+                {
+                    simpleSound.Stop();
+                    SoundPlayerOn = false;
+                }
+                if(leftTime.TotalSeconds < 18)
+                {
+                    eventTimer.Stop();
+                    Application.Exit();
                 }
                 countDownString = /*leftTime.Hours.ToString("00") + ":" +*/
                 "JoKi Hersbruck Livegottesdienst beginnt in " +

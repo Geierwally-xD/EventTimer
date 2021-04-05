@@ -42,7 +42,7 @@
     <RemoteDebugEnabled>false</RemoteDebugEnabled>
     <RemoteDebugMachine />
     <StartAction>Project</StartAction>
-    <StartArguments>"Timer" "11:23"</StartArguments>
+    <StartArguments>"Timer" "17:24"</StartArguments>
     <StartPage />
     <StartProgram />
     <StartURL />
