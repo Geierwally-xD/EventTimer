@@ -415,7 +415,7 @@ namespace EventTimer
             // Array.Copy(part2, 0, folderSound, part1.Length, part2.Length);
             // Array.Copy(part3, 0, folderFile, part1.Length + part2.Length, part3.Length);
 
-            selectedSound = 0;
+            selectedSound = folderSound.Length -1;
             endSound = folderSound.Length;
         }
 
