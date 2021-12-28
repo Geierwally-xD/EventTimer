@@ -743,6 +743,10 @@ namespace EventTimer
             {
                 if (!ShutDownSequence)
                 {
+                    if (timer1.Enabled == true)
+                    { // disable diasow timer to avoid switch photo event at time of switch RasPi camera event
+                        timer1.Enabled = false;
+                    }
                     ShutDownSequence = true;
                     System.Diagnostics.ProcessStartInfo JoKiAutomation = new ProcessStartInfo();
                     JoKiAutomation.FileName = Environment.GetEnvironmentVariable("JokiAutomation") + "JokiAutomation.exe";
@@ -836,6 +840,13 @@ namespace EventTimer
             }
             else
             {
+                if(leftTime.TotalSeconds < 60)
+                {
+                    if (timer1.Enabled == true)
+                    { // disable diasow timer to avoid switch photo event at time of switch RasPi camera event
+                       timer1.Enabled = false;
+                    }
+                }
                 if (leftTime.TotalSeconds < 30)
                 {
                     if (!SwitchJoKiAutomation)
