@@ -1,15 +1,11 @@
+using StreamAlive.Google.Apis.YouTube.Samples;
 using System;
+using System.Diagnostics;
 using System.Drawing;
-using System.Collections;
-using System.ComponentModel;
-using System.Windows.Forms;
-using System.Data;
 using System.IO;
 using System.Media;
-using System.Diagnostics;
-using StreamAlive;
-using StreamAlive.Google.Apis.YouTube.Samples;
 using System.Reflection;
+using System.Windows.Forms;
 
 namespace EventTimer
 {
@@ -52,7 +48,7 @@ namespace EventTimer
         private bool breakTxt1Active = false;
         private bool commandLineCall = false;
         private bool ShutDownSequence = false;
-		private bool SwitchJoKiAutomation = false;
+        private bool SwitchJoKiAutomation = false;
         private static Form1 JET;
         private static Search SEARCH;
         private bool StartSound = false;
@@ -73,9 +69,9 @@ namespace EventTimer
 
         public void MausAktivieren()
         {
-           //Cursor.Clip = altesRect; 
-           Cursor.Show();
-           Application.RemoveMessageFilter(this);
+            //Cursor.Clip = altesRect; 
+            Cursor.Show();
+            Application.RemoveMessageFilter(this);
         }
 
         public void MausDeaktivieren()
@@ -85,7 +81,7 @@ namespace EventTimer
             //Cursor.Clip = neuesRect; 
             Cursor.Hide();
             Application.AddMessageFilter(this);
-        }       
+        }
 
         public Form1()
         {
@@ -135,8 +131,8 @@ namespace EventTimer
             // 
             // panel1
             // 
-            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panel1.AutoScroll = true;
             this.panel1.BackColor = System.Drawing.Color.Black;
@@ -415,7 +411,7 @@ namespace EventTimer
             // Array.Copy(part2, 0, folderSound, part1.Length, part2.Length);
             // Array.Copy(part3, 0, folderFile, part1.Length + part2.Length, part3.Length);
 
-            selectedSound = folderSound.Length -1;
+            selectedSound = folderSound.Length - 1;
             endSound = folderSound.Length;
         }
 
@@ -469,6 +465,7 @@ namespace EventTimer
                     selected = 0;
                     showImage(folderFile[selected]);
                 }
+
                 else
                 {
                     selected = selected + 1;
@@ -687,7 +684,7 @@ namespace EventTimer
                         retStringSize += stringSize.Width;
                     }
                 }
-                if ((SEARCH.streamAlive == false)&& (eventTimer.Enabled == true))// no live stream
+                if ((SEARCH.streamAlive == false) && (eventTimer.Enabled == true))// no live stream
                 {
                     retString = "I ";
                     e.Graphics.DrawString(retString, countDownStringFont, new SolidBrush(Color.Red), retStringSize, ((pictureBox1.Height - 4)) - (stringSize.Height));
@@ -762,7 +759,7 @@ namespace EventTimer
         }
 
         // shutdown timer event
-        void _shutdowntimer_Elapsed(object sender, EventArgs e) 
+        void _shutdowntimer_Elapsed(object sender, EventArgs e)
         {
             if (simpleSound != null)
             {
@@ -776,7 +773,7 @@ namespace EventTimer
         // stream alive timer event
         void _streamAlivetimer_Elapsed(object sender, EventArgs e)
         {
-            if ((SEARCH.youtubeException == false)&&(SEARCH.streamAlive == false)&&(eventTimer.Enabled == true))
+            if ((SEARCH.youtubeException == false) && (SEARCH.streamAlive == false) && (eventTimer.Enabled == true))
             {
                 checkLiveStream();
             }
@@ -840,11 +837,11 @@ namespace EventTimer
             }
             else
             {
-                if(leftTime.TotalSeconds < 60)
+                if (leftTime.TotalSeconds < 60)
                 {
                     if (timer1.Enabled == true)
                     { // disable diasow timer to avoid switch photo event at time of switch RasPi camera event
-                       timer1.Enabled = false;
+                        timer1.Enabled = false;
                     }
                 }
                 if (leftTime.TotalSeconds < 30)
@@ -864,7 +861,7 @@ namespace EventTimer
                     simpleSound.Stop();
                     SoundPlayerOn = false;
                 }
-                if(leftTime.TotalSeconds < 18)
+                if (leftTime.TotalSeconds < 18)
                 {
                     eventTimer.Stop();
                     Application.Exit();
@@ -926,22 +923,22 @@ namespace EventTimer
         private void OnApplicationExit(object sender, EventArgs e)
         {
             // When the application is exiting, write the application data to the
-                try
+            try
+            {
+                if (!ShutDownSequence)
                 {
-                    if (!ShutDownSequence)
-                    {
-                        ShutDownSequence = true;
-                        System.Diagnostics.ProcessStartInfo JoKiAutomation = new ProcessStartInfo();
-                        JoKiAutomation.FileName = Environment.GetEnvironmentVariable("JokiAutomation") + "JokiAutomation.exe";
-                        JoKiAutomation.Arguments = "Altar";
-                        Process.Start(JoKiAutomation);
-                    }
+                    ShutDownSequence = true;
+                    System.Diagnostics.ProcessStartInfo JoKiAutomation = new ProcessStartInfo();
+                    JoKiAutomation.FileName = Environment.GetEnvironmentVariable("JokiAutomation") + "JokiAutomation.exe";
+                    JoKiAutomation.Arguments = "Altar";
+                    Process.Start(JoKiAutomation);
+                }
                 JET.MausAktivieren();
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("JoKiAutomation\nFehler in JoKi Automation Kommandozeilenaufruf");
-                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("JoKiAutomation\nFehler in JoKi Automation Kommandozeilenaufruf");
+            }
         }
 
         private const int WS_SYSMENU = 0x80000; //disable windows close on menu
