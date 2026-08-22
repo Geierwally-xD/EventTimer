@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Media;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace EventTimer
@@ -568,6 +569,15 @@ namespace EventTimer
                 if (commandLineCall)
                 {
                     JET.WindowState = FormWindowState.Maximized;
+
+                    // Ensure slideshow/audio starts immediately even if Resize does not fire
+                    // after setting WindowState in command-line mode.
+                    if ((folderSound != null) && !SoundPlayerOn)
+                    {
+                        nextSound();
+                    }
+
+                    timer1.Enabled = true;
                 }
                 ShutDownSequence = false;
                 SwitchJoKiAutomation = false;
@@ -709,7 +719,7 @@ namespace EventTimer
         }
 
         //keyboard press event handler for controlling some features eg.music on off
-        private void FormKeyPress(object sender, KeyPressEventArgs e)
+        private async void FormKeyPress(object sender, KeyPressEventArgs e)
         {
 
             if (e.KeyChar == 0x000d) //<ctrl + 'M'>
@@ -745,10 +755,7 @@ namespace EventTimer
                         timer1.Enabled = false;
                     }
                     ShutDownSequence = true;
-                    System.Diagnostics.ProcessStartInfo JoKiAutomation = new ProcessStartInfo();
-                    JoKiAutomation.FileName = Environment.GetEnvironmentVariable("JokiAutomation") + "JokiAutomation.exe";
-                    JoKiAutomation.Arguments = "Altar";
-                    Process.Start(JoKiAutomation);
+                    await StartJoKiAutomationWithHandlingAsync("Altar", 10000);
                     shutdowntimer.Interval = 10000;  //elapsed event after 10 seconds
                     shutdowntimer.Start();
                 }
@@ -819,7 +826,7 @@ namespace EventTimer
         }
 
         //eventhandler Timer tick for event countdown calculates remaining minutes seconds and writes result into countdown string 
-        private void eventTimer_Tick(object sender, EventArgs e)
+        private async void eventTimer_Tick(object sender, EventArgs e)
         {
             TimeSpan leftTime = eventTime.Subtract(DateTime.Now);
             if (leftTime.TotalSeconds < 0)
@@ -850,10 +857,15 @@ namespace EventTimer
                     {
                         SwitchJoKiAutomation = true;
                         ShutDownSequence = true;
-                        System.Diagnostics.ProcessStartInfo JoKiAutomation = new ProcessStartInfo();
-                        JoKiAutomation.FileName = Environment.GetEnvironmentVariable("JokiAutomation") + "JokiAutomation.exe";
-                        JoKiAutomation.Arguments = "Altar";
-                        Process.Start(JoKiAutomation);
+                        eventTimer.Stop();
+                        await StartJoKiAutomationWithHandlingAsync("Altar", 10000);
+                        if ((leftTime.TotalSeconds < 24) && (simpleSound != null))
+                        {
+                            simpleSound.Stop();
+                            SoundPlayerOn = false;
+                        }
+                        Application.Exit();
+                        return;
                     }
                 }
                 if ((leftTime.TotalSeconds < 24) && (simpleSound != null))
@@ -920,6 +932,91 @@ namespace EventTimer
             }
         }
 
+        private Task<int> StartJoKiAutomationAsync(string argument, int timeoutMs)
+        {
+            return Task.Run(() =>
+            {
+                string basePath = Environment.GetEnvironmentVariable("JokiAutomation");
+                if (string.IsNullOrWhiteSpace(basePath))
+                {
+                    throw new InvalidOperationException("Die Umgebungsvariable JokiAutomation ist nicht gesetzt.");
+                }
+
+                string exePath = Path.Combine(basePath, "JokiAutomation.exe");
+                if (!File.Exists(exePath))
+                {
+                    throw new FileNotFoundException("JokiAutomation.exe wurde nicht gefunden.", exePath);
+                }
+
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    FileName = exePath,
+                    Arguments = argument,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                using (Process process = Process.Start(startInfo))
+                {
+                    if (process == null)
+                    {
+                        throw new InvalidOperationException("JoKiAutomation konnte nicht gestartet werden.");
+                    }
+
+                    if (!process.WaitForExit(timeoutMs))
+                    {
+                        try
+                        {
+                            if (!process.HasExited)
+                            {
+                                process.Kill();
+                                process.WaitForExit();
+                            }
+                        }
+                        catch
+                        {
+                        }
+
+                        throw new TimeoutException("JoKiAutomation hat das Zeitlimit überschritten und wurde beendet.");
+                    }
+
+                    return process.ExitCode;
+                }
+            });
+        }
+
+        private async Task<bool> StartJoKiAutomationWithHandlingAsync(string argument, int timeoutMs)
+        {
+            try
+            {
+                int exitCode = await StartJoKiAutomationAsync(argument, timeoutMs);
+
+                if (exitCode == 2)
+                {
+                    Debug.WriteLine("JoKiAutomation läuft bereits; zweiter Start übersprungen.");
+                    return true;
+                }
+
+                if (exitCode != 0)
+                {
+                    MessageBox.Show($"JoKiAutomation wurde mit ExitCode {exitCode} beendet.");
+                    return false;
+                }
+
+                return true;
+            }
+            catch (TimeoutException ex)
+            {
+                MessageBox.Show($"JoKiAutomation\nTimeout: {ex.Message}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"JoKiAutomation\nFehler beim Start: {ex.Message}");
+                return false;
+            }
+        }
+
         private void OnApplicationExit(object sender, EventArgs e)
         {
             // When the application is exiting, write the application data to the
@@ -928,10 +1025,7 @@ namespace EventTimer
                 if (!ShutDownSequence)
                 {
                     ShutDownSequence = true;
-                    System.Diagnostics.ProcessStartInfo JoKiAutomation = new ProcessStartInfo();
-                    JoKiAutomation.FileName = Environment.GetEnvironmentVariable("JokiAutomation") + "JokiAutomation.exe";
-                    JoKiAutomation.Arguments = "Altar";
-                    Process.Start(JoKiAutomation);
+                    StartJoKiAutomationWithHandlingAsync("Altar", 10000).GetAwaiter().GetResult();
                 }
                 JET.MausAktivieren();
             }
